@@ -1,47 +1,38 @@
 global command_word
 
 telephone_list = {"Olha":"+380996409040"}
-#decorators
-def input_error_name_phone(func):
+#decorator
+def input_error(func):
     def inner(list_text):
-        try:
-            result = func(list_text)
-        except IndexError:
-            result = "Invalid input format. Give me name and phone please." 
-            print(result)     
-        return result
-    return inner
-
-def input_error_phone(func):
-    def inner(list_text):
-        try:
-            result = func(list_text)
-        except IndexError:
-            result = "Invalid input format. Give me phone please."   
-            print(result)    
-        return result
-    return inner
-def check_phone(func):
-    def inner(text):        
-        text_list = text.split()
-        phone_number = text_list[2]        
-        new_phone = (
-	        phone_number.strip()
-	        .removeprefix("+")
-	        .replace("(", "")
-	        .replace(")", "")
-	        .replace("-", "")
-	        .replace(" ", "")
-    )
-        if len(new_phone) == 10:
-            new_phone = "+38" + new_phone
-        elif len(new_phone) == 12:
-            new_phone = "+" + new_phone 
-
-        text_list[2] = new_phone        
-        new_text = " ".join(text_list)
-        result = func(new_text)        
-        return result
+        parser_list = list_text.split()
+        if len(parser_list) == 3:
+            try:
+                result = func(list_text)
+            except IndexError:
+                result = "Invalid input format. Give me name and phone please." 
+                print(result)     
+            return result        
+        if len(parser_list) == 2:
+            try:
+                result = func(list_text)
+            except IndexError:
+                result = "Invalid input format. Give me phone please."   
+                print(result)    
+            return result
+        if len(parser_list) == 1 and parser_list[0] == "phone":
+            try:
+                result = func(list_text)
+            except IndexError:
+                result = "Invalid input format. Give me phone please."   
+                print(result)    
+            return result
+        if len(parser_list) == 1 and parser_list[0] == "change":
+            try:
+                result = func(list_text)
+            except IndexError:
+                result = "Invalid input format. Give me phone please."   
+                print(result)    
+            return result
     return inner
 
 # main functions
@@ -61,20 +52,19 @@ def show_all():
 def say_good_bye():
     return "Good bye!"
 
-@input_error_name_phone
-@check_phone
+@input_error
 def add_new_telephone_contact(text):    
     text_list = text.split()    
     telephone_list.update({text_list[1].title():text_list[2]})
     print(f"The contact {text_list[1].title()} has been successfully added")
     
-@input_error_name_phone
+@input_error
 def change_phone_number(text):
     text_list = text.split()
     telephone_list[text_list[1].title()] = text_list[2]
     print(f"Phone {text_list[1].title()} successfully changed to {text_list[2]}")
 
-@input_error_phone
+@input_error
 def show_name_contact(text):
     text_list = text.split()
     for key, value in telephone_list.items():
