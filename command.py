@@ -2,24 +2,19 @@ global command_word
 
 telephone_list = {"Olha":"+380996409040"}
 
-def catch_error(text_error, func, *args, **kwargs):
-    try:
-        return func(*args, **kwargs)
-    except IndexError:
-        return text_error
 #decorator
-def input_error(func):
+def input_error(function):
     def inner(*args, **kwargs):
-        list_text = args[0]  
-        parser_list = list_text.split()
-        if len(parser_list) == 3:
-            return catch_error("Invalid input format. Give me name and phone please.", func, *args, **kwargs)
-        if len(parser_list) == 2:
-            return catch_error("Invalid input format. Give me phone please.", func, *args, **kwargs)
-        if len(parser_list) == 1 and parser_list[0] == "phone":
-            return catch_error("Invalid input format. Give me phone please.", func, *args, **kwargs)
-        if len(parser_list) == 1 and parser_list[0] == "change":
-            return catch_error("Invalid input format. Give me phone please.", func, *args, **kwargs)    
+        try:
+            return function(*args, **kwargs)
+        except KeyError:
+            return 'Invalid name'
+        except ValueError as exception:
+            return exception.args[0]
+        except IndexError:
+            return "Invalid input format. Give me phone please."
+        except TypeError:
+            return 'Invalid command'
     return inner
 
 # main functions
